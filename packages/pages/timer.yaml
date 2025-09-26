@@ -1,0 +1,60 @@
+# © Copyright 2025 Stuart Parmenter
+# SPDX-License-Identifier: MIT
+
+lvgl_page_manager:
+  pages:
+    - page: page_timer
+      friendly_name: "Timer"
+
+# Fetch timer state from Home Assistant
+text_sensor:
+  - platform: homeassistant
+    id: ha_timer_remaining
+    entity_id: ${TIMER_ENTITY}
+    attribute: remaining
+    on_value:
+      then:
+        - lambda: |-
+            id(timer_label).set_text(x.c_str());
+
+# ---- Simple Timer ----
+lvgl:
+  pages:
+    - id: page_timer
+      width: 100%
+      height: 100%
+      layout:
+        type: FLEX
+        flex_flow: COLUMN
+        flex_align_main: CENTER
+        flex_align_cross: CENTER
+        pad_row: 6
+      widgets:
+        - label:
+            id: timer_label
+            width: 100%
+            text_align: CENTER
+            # render time via built-in time_format
+            text: "Timer: 00:00"
+
+
+# ---- Extend your existing time source ----
+time:
+  - id: !extend ha_time
+
+    # when we first get a valid clock, populate both labels
+    on_time_sync:
+      then:
+        - lvgl.label.update:
+              id: timer_label
+              text: "Timer: 00:00"
+
+
+    # update both every minute on the minute
+    on_time:
+      - seconds: 0
+        minutes: /1
+        then:
+          - lvgl.label.update:
+              id: timer_label
+              text: "Timer: 00:00"
