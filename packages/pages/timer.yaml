@@ -15,15 +15,16 @@ text_sensor:
     on_value:
       then:
         - lambda: |-
-            auto timer = id(ha_timer_remaining);
-            if (timer->state == "active" || timer->state == "paused") {
-              int remaining = timer->attributes["remaining"].as<int>();
-              int hours = remaining / 3600;
-              int minutes = (remaining % 3600) / 60;
-              int seconds = remaining % 60;
-              return str_sprintf("%02d:%02d:%02d", hours, minutes, seconds);
+            // Get timer value from Home Assistant
+            if (id(ha_timer_remaining).has_state()) {
+              int seconds = (int)id(ha_timer_remaining).state;
+              int minutes = seconds / 60;
+              int secs = seconds % 60;
+              
+              // Format as MM:SS
+              it.printf(0, 0, "%02d:%02d", minutes, secs);
             } else {
-              return std::string("00:00:00");
+              it.print(0, 0, "----");
             }
 
 # ---- Simple Timer ----
