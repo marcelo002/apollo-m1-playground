@@ -15,7 +15,16 @@ text_sensor:
     on_value:
       then:
         - lambda: |-
-            id(timer_label).set_text(x.c_str());
+            auto timer = id(ha_timer_remaining);
+            if (timer->state == "active" || timer->state == "paused") {
+              int remaining = timer->attributes["remaining"].as<int>();
+              int hours = remaining / 3600;
+              int minutes = (remaining % 3600) / 60;
+              int seconds = remaining % 60;
+              return str_sprintf("%02d:%02d:%02d", hours, minutes, seconds);
+            } else {
+              return std::string("00:00:00");
+            }
 
 # ---- Simple Timer ----
 lvgl:
