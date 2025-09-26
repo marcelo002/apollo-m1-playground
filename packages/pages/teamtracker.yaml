@@ -65,8 +65,8 @@ script:
             status_text = kickoff_in;
           } else if (game_state == "IN") {
             // In-game: show period/quarter and clock
-            if (sport == "baseball" || sport == "hockey") {
-              // Baseball/Hockey: just show the clock (e.g., "Top 9th", "2nd Period")
+            if (sport == "baseball" || sport == "hockey" || sport == "soccer") {
+              // Baseball/Hockey/Soccer: just show the clock (e.g., "Top 9th", "2nd Period")
               status_text = !game_clock.empty() ? game_clock : "In Progress";
             } else {
               // Football and other sports
